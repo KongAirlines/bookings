@@ -1,16 +1,14 @@
-FROM node:20
+FROM node:20 AS build
 
-ENV TINI_VERSION=v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-
-WORKDIR /usr/src/app
-COPY package*.json ./
+COPY . /app
+WORKDIR /app
 
 RUN npm ci --omit=dev
 
-COPY . .
+FROM gcr.io/distroless/nodejs20-debian12
+
+COPY --from=build /app /app
+WORKDIR /app
 
 EXPOSE 3000
-ENTRYPOINT ["/tini", "--"]
-CMD [ "node", "main.js" ]
+CMD ["main.js"]
