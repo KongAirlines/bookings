@@ -10,5 +10,5 @@ FROM gcr.io/distroless/nodejs20-debian12
 COPY --from=build /app /app
 WORKDIR /app
 
-EXPOSE 3000
-CMD ["main.js"]
+EXPOSE 8084
+CMD ["main.js","8084"]
