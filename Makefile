@@ -26,13 +26,13 @@ build: check-dependencies
 	npm install
 
 build-docker:
-	@docker build -t kong-air-bookings-svc:dev .
+	@docker build -t kongair/bookings:latest .
 
 run: check-dependencies
 	node main.js ${KONG_AIR_BOOKINGS_PORT}
 
 docker: build-docker
-	@docker run -d --name kong-air-bookings-svc -p ${KONG_AIR_BOOKINGS_PORT}:${KONG_AIR_BOOKINGS_PORT} kong-air-bookings-svc:dev
+	@docker run -d --name kongair-bookings -p ${KONG_AIR_BOOKINGS_PORT}:${KONG_AIR_BOOKINGS_PORT} kongair/bookings:latest
 
 kill-docker:
 	-@docker stop kong-air-bookings-svc
