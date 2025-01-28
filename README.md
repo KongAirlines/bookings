@@ -12,6 +12,11 @@ The server mimics a database by storing customer bookings
 into a simple file ([bookings.json](bookings.json)) stored in
 the servers runtime folder.
 
+### Security
+
+See [Security](SECURITY.md) for information on how to report security vulnerabilities.
+
+
 ### Prerequisites
 
 * `node` : tested with `v17.9.1`
