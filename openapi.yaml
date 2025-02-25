@@ -11,11 +11,20 @@ servers:
 - url: https://api.kong-air.com
   description: KongAir API Server
 
+tags:
+- name: health
+  description: Health check endpoints
+- name: sales
+  description: Customer sales endpoints
+
 paths:
   /health:
     get:
       summary: Health check endpoint
       description: Endpoint that returns the service health status.
+      operationId: bookings-health-check
+      tags:
+        - health
       responses:
         '200':
           description: Service is healthy
@@ -42,6 +51,7 @@ paths:
       tags:
       - sales
       summary: Get a customers current bookings
+      description: Returns a list of bookings for the customer
       operationId: get-bookings
       responses:
         '200':
@@ -71,6 +81,7 @@ paths:
       tags:
         - sales
       summary: Create a new customer booking
+      description: Creates a new booking for the customer
       operationId: post-booking
       responses:
         '201':
@@ -95,6 +106,7 @@ paths:
                 type: string
               example: Not found
       requestBody:
+        description: Defines a Booking Request
         content:
           application/json:
             schema:
@@ -110,6 +122,7 @@ paths:
 components:
   schemas:
     Booking:
+      description: A flight Booking object
       type: object
       properties:
         ticket_number:
@@ -132,7 +145,16 @@ components:
       required:
         - ticket_number
         - flight
+      example:
+        ticket_number: CDF3412
+        flight:
+          number: KA924
+          route_id: LHR-SFO
+          scheduled_departure: 2023-09-03T09:15:00Z
+          scheduled_arrival: 2023-09-03T14:23:00Z
+        seat: 32A
     BookingRequest:
+      description: A flight Booking Request object
       type: object
       properties:
         flight_number:
@@ -141,10 +163,16 @@ components:
           type: string
       required:
         - flight_number
+      example:
+        flight_number: KA924
+        seat: 32A
     BookingResponse:
+      description: A flight Booking Request Response object
       type: object
       properties:
         ticket_number:
           type: string
       required:
         - ticket_number
+      example:
+        ticket_number: CDF3412
