@@ -1,0 +1,35 @@
+_defaults:
+  kongctl:
+    namespace: bookings-dev
+
+control_planes:
+  - ref: customer-data-dev
+    _external:
+      selector:
+        matchFields:
+          name: customer-data-dev
+    _deck:
+      files:
+        - ../gateway/dev/kong.yaml
+      flags:
+        - --analytics=false
+
+apis:
+  - ref: bookings-dev-api
+    name: KongAir Bookings - Development
+    description: Development Catalog API owned by the Bookings service team.
+    versions:
+      - ref: bookings-dev-0-1-0
+        version: !file ../openapi.yaml#info.version
+        spec: !file ../openapi.yaml
+    publications:
+      - ref: bookings-dev-publication
+        portal_id: !lookup {name: KongAirlines Development}
+        visibility: private
+        auth_strategy_ids:
+          - !lookup {name: kongairlines-key-auth-dev}
+    implementations:
+      - ref: bookings-dev-control-plane
+        type: control_plane
+        control_plane:
+          control_plane_id: !ref customer-data-dev#id

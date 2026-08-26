@@ -1,0 +1,69 @@
+_format_version: "3.0"
+_info:
+  select_tags:
+  - scope-bookings-dev
+services:
+- host: api.kong-air.com
+  id: a563ffba-c768-5dee-82ca-5eeedfba025c
+  name: bookings-dev
+  path: /
+  plugins:
+  - config:
+      match_policy: required
+    name: ace
+    tags:
+    - env-dev
+    - team-customer-data
+    - owner-bookings
+    - scope-bookings-dev
+  port: 443
+  protocol: https
+  routes:
+  - id: ed9b3087-94da-5d6a-b1f2-3e2d3d73c060
+    methods:
+    - GET
+    name: bookings-dev_get-bookings
+    paths:
+    - ~/bookings$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags:
+    - env-dev
+    - team-customer-data
+    - owner-bookings
+    - scope-bookings-dev
+  - id: cd66b622-1cd6-5506-bf32-fb26c96c2c7e
+    methods:
+    - POST
+    name: bookings-dev_post-booking
+    paths:
+    - ~/bookings$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags:
+    - env-dev
+    - team-customer-data
+    - owner-bookings
+    - scope-bookings-dev
+  - id: ebf16c31-774f-557c-887c-c7f98e8bf0a8
+    methods:
+    - GET
+    name: bookings-dev_bookings-health-check
+    paths:
+    - ~/bookings/health$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags:
+    - env-dev
+    - team-customer-data
+    - owner-bookings
+    - scope-bookings-dev
+  tags:
+  - env-dev
+  - team-customer-data
+  - owner-bookings
+  - scope-bookings-dev
+upstreams: []

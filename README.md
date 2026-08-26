@@ -72,3 +72,28 @@ Note that the `flight_number` field must be a valid flight number
 served from the flights service
 
 See the code for the dependent flight service (`FLIGHT_SVC_ENDPOINT`).
+
+## Konnect Reference Platform
+
+This repository owns the Bookings API contract and its federated Konnect
+desired state. It is the protected-API example for the
+[Konnect Reference Platform](https://developer.konghq.com/konnect-reference-platform/).
+
+- [`konnect/dev.yaml`](konnect/dev.yaml) owns the private development Catalog
+  API and applies this service's Gateway state to `customer-data-dev`.
+- [`konnect/prod.yaml`](konnect/prod.yaml) owns the public production Catalog
+  API. Production Gateway state is promoted to the
+  [platform repository](https://github.com/KongAirlines/platform) for review.
+- [`gateway/plugins/ace.yaml`](gateway/plugins/ace.yaml) installs service-scoped
+  Access Control Enforcement with `match_policy: required`.
+- [`openapi/versions/`](openapi/versions/) retains production release
+  specifications while the root `openapi.yaml` remains mutable for development.
+
+Install decK 1.65.2 and run `./scripts/generate-gateway.sh` after changing an
+OpenAPI document or Gateway plugin input. Commit the generated development and
+production files. CI regenerates them and rejects drift.
+
+The kongctl manifests intentionally exercise control-plane API implementations
+and external auth-strategy lookup. They require the corresponding federated
+declarative support in kongctl, including
+[Kong/kongctl#1992](https://github.com/Kong/kongctl/pull/1992).

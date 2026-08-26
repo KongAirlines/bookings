@@ -1,0 +1,30 @@
+_defaults:
+  kongctl:
+    namespace: bookings-prod
+
+control_planes:
+  - ref: kongairlines-prod
+    _external:
+      selector:
+        matchFields:
+          name: kongairlines-prod
+
+apis:
+  - ref: bookings-prod-api
+    name: KongAir Bookings
+    description: Production Catalog API owned by the Bookings service team.
+    versions:
+      - ref: bookings-prod-0-1-0
+        version: !file ../openapi/versions/0.1.0.yaml#info.version
+        spec: !file ../openapi/versions/0.1.0.yaml
+    publications:
+      - ref: bookings-prod-publication
+        portal_id: !lookup {name: KongAirlines Production}
+        visibility: public
+        auth_strategy_ids:
+          - !lookup {name: kongairlines-key-auth-prod}
+    implementations:
+      - ref: bookings-prod-control-plane
+        type: control_plane
+        control_plane:
+          control_plane_id: !ref kongairlines-prod#id
