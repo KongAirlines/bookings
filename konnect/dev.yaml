@@ -1,6 +1,6 @@
 _defaults:
   kongctl:
-    namespace: bookings-dev
+    namespace: bookings
 
 control_planes:
   - ref: customer-data-dev
