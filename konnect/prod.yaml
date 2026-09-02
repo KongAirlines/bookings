@@ -13,6 +13,7 @@ apis:
   - ref: bookings-prod-api
     name: KongAir Bookings
     description: Production Catalog API owned by the Bookings service team.
+    version: 0.1.0
     versions:
       - ref: bookings-prod-0-1-0
         version: !file ../openapi/versions/0.1.0.yaml#info.version

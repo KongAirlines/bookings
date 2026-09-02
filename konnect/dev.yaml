@@ -18,8 +18,9 @@ apis:
   - ref: bookings-dev-api
     name: KongAir Bookings - Development
     description: Development Catalog API owned by the Bookings service team.
+    version: !file ../openapi.yaml#info.version
     versions:
-      - ref: bookings-dev-0-1-0
+      - ref: bookings-dev-current
         version: !file ../openapi.yaml#info.version
         spec: !file ../openapi.yaml
     publications:
