@@ -84,8 +84,9 @@ desired state. It is the protected-API example for the
 - [`konnect/prod.yaml`](konnect/prod.yaml) owns the public production Catalog
   API. Production Gateway state is promoted to the
   [platform repository](https://github.com/KongAirlines/platform) for review.
-- [`gateway/plugins/ace.yaml`](gateway/plugins/ace.yaml) installs service-scoped
-  Access Control Enforcement with `match_policy: required`.
+- The Platform repository owns the global Access Control Enforcement plugin;
+  this repository supplies the API operations and authentication strategy that
+  determine which Bookings requests require application credentials.
 - The root [`openapi.yaml`](openapi.yaml) is the next beta contract, while
   [`openapi/versions/`](openapi/versions/) retains immutable stable releases.
 

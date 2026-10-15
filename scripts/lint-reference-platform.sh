@@ -28,8 +28,10 @@ for stage in dev prod; do
   done
 done
 
-grep -Fq 'name: ace' gateway/prod/kong.yaml
-grep -Fq 'match_policy: required' gateway/prod/kong.yaml
+if grep -Fq 'name: ace' gateway/dev/kong.yaml gateway/prod/kong.yaml; then
+  echo "service Gateway state must not install the platform-owned ACE plugin" >&2
+  exit 1
+fi
 
 if grep -ERin "${OBSOLETE_PATTERN}" README.md .github gateway konnect scripts; then
   echo "obsolete Reference Platform tooling is not allowed" >&2

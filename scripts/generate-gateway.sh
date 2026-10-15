@@ -52,14 +52,9 @@ for stage in dev prod; do
     --selector '$..routes[?(@.paths[0]=="~/health$")]' \
     --value 'paths:["~/bookings/health$"]' \
     --output-file "${tmp_dir}/routed.yaml"
-  deck file add-plugins \
-    --analytics=false \
-    --state "${tmp_dir}/routed.yaml" \
-    --output-file "${tmp_dir}/plugins.yaml" \
-    gateway/plugins/ace.yaml
   deck file add-tags \
     --analytics=false \
-    --state "${tmp_dir}/plugins.yaml" \
+    --state "${tmp_dir}/routed.yaml" \
     --output-file "gateway/${stage}/kong.yaml" \
     "${tags[@]}"
   deck file validate "gateway/${stage}/kong.yaml"
