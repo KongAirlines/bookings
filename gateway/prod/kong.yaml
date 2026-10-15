@@ -7,15 +7,7 @@ services:
   id: 5c988aec-f4c9-5cd6-9be7-e88d720de160
   name: bookings-prod
   path: /
-  plugins:
-  - config:
-      match_policy: required
-    name: ace
-    tags:
-    - env-prod
-    - team-customer-data
-    - owner-bookings
-    - scope-bookings-prod
+  plugins: []
   port: 443
   protocol: https
   routes:
