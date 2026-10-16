@@ -35,6 +35,10 @@ jobs:
         run: |
           ./scripts/generate-gateway.sh
           git diff --exit-code -- gateway/dev/kong.yaml gateway/prod/kong.yaml
+      - name: Transition ACE-protected API version
+        env:
+          KONGCTL_DEFAULT_KONNECT_PAT: ${{ secrets.KONNECT_TOKEN }}
+        run: ./scripts/transition-ace-api-version.sh "KongAir Bookings - Development"
       - name: Sync development Catalog and Gateway state
         env:
           KONGCTL_DEFAULT_KONNECT_PAT: ${{ secrets.KONNECT_TOKEN }}

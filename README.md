@@ -92,6 +92,9 @@ desired state. It is the protected-API example for the
 
 Advance the root `info.version` for every contract change. This creates a new
 Catalog API version instead of attempting to modify an ACE-protected version.
+Until [kongctl #2510](https://github.com/Kong/kongctl/issues/2510) is resolved,
+development delivery explicitly creates and selects that version with the
+Konnect API before `kongctl sync` performs authoritative reconciliation.
 
 Service developers work API-first by changing the root `openapi.yaml` or an
 explicit Gateway transformation input. Credential-free CI converts those
