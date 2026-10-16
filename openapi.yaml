@@ -18,7 +18,7 @@ tags:
   description: Customer sales endpoints
 
 paths:
-  /health:
+  /bookings/health:
     get:
       summary: Health check endpoint
       description: Endpoint that returns the service health status.
