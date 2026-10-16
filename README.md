@@ -91,7 +91,13 @@ desired state. It is the protected-API example for the
   [`openapi/versions/`](openapi/versions/) retains immutable stable releases.
 
 Advance the root `info.version` for every contract change. This creates a new
-Catalog API version instead of attempting to modify an ACE-protected version.
+Catalog API version instead of modifying an ACE-protected version. The
+additive `konnect/dev-versions.yaml` manifest is applied before the remaining
+development state is synchronized; the sync manifest intentionally omits its
+`versions` collection so older development versions are not deleted.
+Until [kongctl #2510](https://github.com/Kong/kongctl/issues/2510) is resolved,
+development delivery explicitly selects the newly applied version with the
+Konnect API before `kongctl sync` performs authoritative reconciliation.
 
 Service developers work API-first by changing the root `openapi.yaml` or an
 explicit Gateway transformation input. Credential-free CI converts those

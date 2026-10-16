@@ -1,0 +1,14 @@
+_defaults:
+  kongctl:
+    namespace: bookings
+
+apis:
+  - ref: bookings-dev-api
+    _external:
+      selector:
+        matchFields:
+          name: KongAir Bookings - Development
+    versions:
+      - ref: bookings-dev-current
+        version: !file ../openapi.yaml#info.version
+        spec: !file ../openapi.yaml
