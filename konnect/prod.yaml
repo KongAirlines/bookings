@@ -1,6 +1,6 @@
 _defaults:
   kongctl:
-    namespace: bookings
+    namespace: bookings-prod
 
 control_planes:
   - ref: kongairlines-prod
