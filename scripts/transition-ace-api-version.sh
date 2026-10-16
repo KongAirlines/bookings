@@ -24,11 +24,8 @@ versions_json="$(kongctl api get "/v3/apis/${api_id}/versions" --output json)"
 
 if ! jq -e --arg version "${desired_version}" \
   '.data[] | select(.version == $version)' <<< "${versions_json}" >/dev/null; then
-  payload="$(mktemp)"
-  trap 'rm -f "${payload}"' EXIT
-  jq -n --arg version "${desired_version}" --rawfile spec openapi.yaml \
-    '{version: $version, spec: {content: $spec}}' > "${payload}"
-  kongctl api post "/v3/apis/${api_id}/versions" --body-file "${payload}" >/dev/null
+  echo "API version ${desired_version} must be created by kongctl apply before selection" >&2
+  exit 1
 fi
 
 if [[ "${current_version}" != "${desired_version}" ]]; then
