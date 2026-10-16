@@ -20,6 +20,11 @@ class BookingsStore {
     return this.bookings[username] || [];
   }
 
+  getUserBooking(username, ticketNumber) {
+    return this.getUserBookings(username)
+      .find((booking) => booking.ticket_number === ticketNumber);
+  }
+
   addBooking(username, booking) {
     if (!this.bookings[username]) this.bookings[username] = [];
     this.bookings[username].push(booking);

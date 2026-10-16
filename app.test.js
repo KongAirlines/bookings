@@ -12,6 +12,7 @@ jest.mock('./bookingsStore');
 beforeEach(() => {
   // Mock the BookingsStore methods
   BookingsStore.prototype.getUserBookings = jest.fn();
+  BookingsStore.prototype.getUserBooking = jest.fn();
   BookingsStore.prototype.addBooking = jest.fn();
 
   // Create an instance of BookingsStore
@@ -46,6 +47,40 @@ test('GET /bookings returns bookings for user', async () => {
   expect(res.statusCode).toEqual(200);
   expect(res.body).toEqual(mockBookings);
   expect(mockStore.getUserBookings).toHaveBeenCalledTimes(1);
+});
+
+test('GET /bookings/:ticketNumber returns the requested booking', async () => {
+  const mockBooking = {
+    ticket_number: 'RIN74XEJWG',
+    seat: '18A',
+    flight: {
+      number: 'KA0288',
+      route_id: 'LHR-BOM',
+      scheduled_arrival: '2024-02-13T09:30:00Z',
+      scheduled_departure: '2024-02-13T18:40:00Z',
+    },
+  };
+
+  mockStore.getUserBooking.mockReturnValue(mockBooking);
+
+  const res = await request(app)
+    .get('/bookings/RIN74XEJWG')
+    .set('x-consumer-username', 'jdoe');
+
+  expect(res.statusCode).toEqual(200);
+  expect(res.body).toEqual(mockBooking);
+  expect(mockStore.getUserBooking)
+    .toHaveBeenCalledWith('jdoe', 'RIN74XEJWG');
+});
+
+test('GET /bookings/:ticketNumber returns 404 for an unknown booking', async () => {
+  mockStore.getUserBooking.mockReturnValue(undefined);
+
+  const res = await request(app)
+    .get('/bookings/UNKNOWN')
+    .set('x-consumer-username', 'jdoe');
+
+  expect(res.statusCode).toEqual(404);
 });
 
 
