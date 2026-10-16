@@ -38,6 +38,8 @@ jobs:
       - name: Transition ACE-protected API version
         env:
           KONGCTL_DEFAULT_KONNECT_PAT: ${{ secrets.KONNECT_TOKEN }}
+        # Temporary sequencing workaround for https://github.com/Kong/kongctl/issues/2510.
+        # Remove this step after declarative sync supports forced ACE version transitions.
         run: ./scripts/transition-ace-api-version.sh "KongAir Bookings - Development"
       - name: Sync development Catalog and Gateway state
         env:
