@@ -61,6 +61,20 @@ module.exports = function (bookingsStore) {
     res.json(userBookings);
   });
 
+  // ********* GET /bookings/:ticketNumber *********
+  app.get('/bookings/:ticketNumber', (req, res) => {
+    const booking = bookingsStore.getUserBooking(
+      req.user,
+      req.params.ticketNumber,
+    );
+
+    if (!booking) {
+      return res.status(404).end();
+    }
+
+    res.json(booking);
+  });
+
   // ********* POST /bookings *********
   app.post('/bookings', async (req, res, next) => {
     try {

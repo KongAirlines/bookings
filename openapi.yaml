@@ -4,7 +4,7 @@ openapi: 3.0.0
 
 info:
   description: KongAir Bookings service provides customers the ability to book and retrieve flight bookings on KongAir
-  version: 0.3.0-beta.1
+  version: 0.3.0-beta.2
   title: Bookings Service
 
 servers:
@@ -88,6 +88,31 @@ paths:
                    "flight_number": "KA924",
                    "seat": "32A"
                  }
+  "/bookings/{ticketNumber}":
+    get:
+      tags:
+      - sales
+      summary: Get a booking by ticket number
+      description: Returns one booking owned by the authenticated customer
+      operationId: get-booking-by-ticket-number
+      parameters:
+      - name: ticketNumber
+        in: path
+        required: true
+        description: Ticket number of the booking to retrieve
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Booking not found
 
 components:
   schemas:
