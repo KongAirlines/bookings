@@ -4,7 +4,11 @@ Provides the KongAir customer bookings service.
 
 The API specification can be found in the [openapi.yaml](openapi.yaml) file.
 
-Customers are identified by the `x-consumer-username` header. This username is how the service segments customer information.
+Gateway clients authenticate with a signed JWT bearer token. Kong Gateway
+validates the token, maps its issuer to a Consumer, and replaces
+`X-Consumer-Username` with that Consumer's username before proxying the
+request. The service trusts that Gateway-supplied identity to segment booking
+data; it does not parse JWTs itself.
 
 **This is an example service only. Proper security measures should be followed in production use cases.**
 
@@ -53,14 +57,14 @@ npm run dev
 
 #### Example client requests
 
-Read all customer bookings for the user `dfreese`:
+Direct local requests bypass Kong Gateway, so supply a test identity header:
 ```
-curl -s -H "x-consumer-username: dfreese" localhost:3000/bookings
+curl -s -H "x-consumer-username: jhamby" localhost:3000/bookings
 ```
 
-Create a new booking for the user `dfreese`:
+Create a new booking for the same local test identity:
 ```
-curl -X POST -H "x-consumer-username: dfreese" 'http://localhost:3000/bookings' \
+curl -X POST -H "x-consumer-username: jhamby" 'http://localhost:3000/bookings' \
 -H 'Content-Type: application/json' \
 -d '{
     "flight_number": "KA0277",
@@ -84,9 +88,11 @@ desired state. It is the protected-API example for the
 - [`konnect/prod.yaml`](konnect/prod.yaml) owns the public production Catalog
   API. Production Gateway state is promoted to the
   [platform repository](https://github.com/KongAirlines/platform) for review.
-- The Platform repository owns the global Access Control Enforcement plugin;
-  this repository supplies the API operations and authentication strategy that
-  determine which Bookings requests require application credentials.
+- The Platform repository owns shared Gateway Consumers, JWT verification
+  credentials, and the global Access Control Enforcement plugin. This
+  repository owns the service-scoped JWT policy. ACE limits traffic to
+  published Catalog operations; it does not replace JWT authentication or
+  require a Dev Portal application credential for this API.
 - The root [`openapi.yaml`](openapi.yaml) is the next beta contract, while
   [`openapi/versions/`](openapi/versions/) retains immutable stable releases.
 

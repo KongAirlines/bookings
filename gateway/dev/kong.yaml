@@ -7,7 +7,24 @@ services:
   id: a563ffba-c768-5dee-82ca-5eeedfba025c
   name: bookings-dev
   path: /
-  plugins: []
+  plugins:
+  - config:
+      claims_to_verify:
+      - exp
+      cookie_names: []
+      header_names:
+      - authorization
+      key_claim_name: iss
+      run_on_preflight: false
+      secret_is_base64: false
+      uri_param_names: []
+    enabled: true
+    name: jwt
+    tags:
+    - env-dev
+    - team-customer-data
+    - owner-bookings
+    - scope-bookings-dev
   port: 443
   protocol: https
   routes:

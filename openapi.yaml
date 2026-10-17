@@ -11,6 +11,9 @@ servers:
 - url: https://api.kong-air.com
   description: KongAir API Server
 
+security:
+  - bearerAuth: []
+
 tags:
 - name: sales
   description: Customer sales endpoints
@@ -115,6 +118,11 @@ paths:
           description: Booking not found
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Booking:
       description: A flight Booking object

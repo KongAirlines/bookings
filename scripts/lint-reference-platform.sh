@@ -38,6 +38,13 @@ if grep -Fq 'name: ace' gateway/dev/kong.yaml gateway/prod/kong.yaml; then
   exit 1
 fi
 
+for stage in dev prod; do
+  if ! grep -Fq 'name: jwt' "gateway/${stage}/kong.yaml"; then
+    echo "protected service Gateway state must enable JWT authentication" >&2
+    exit 1
+  fi
+done
+
 if grep -ERin "${OBSOLETE_PATTERN}" README.md .github gateway konnect scripts; then
   echo "obsolete Reference Platform tooling is not allowed" >&2
   exit 1
