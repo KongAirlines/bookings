@@ -24,6 +24,19 @@ beforeEach(() => {
   app = require('./app')(mockStore);
 });
 
+test('GET /health remains available without a consumer identity', async () => {
+  const res = await request(app).get('/health');
+
+  expect(res.statusCode).toEqual(200);
+  expect(res.body).toEqual({ status: 'OK' });
+});
+
+test('GET /bookings rejects requests without a Gateway identity', async () => {
+  const res = await request(app).get('/bookings');
+
+  expect(res.statusCode).toEqual(401);
+});
+
 test('GET /bookings returns bookings for user', async () => {
   const mockBookings = [
     {

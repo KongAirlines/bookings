@@ -4,12 +4,15 @@ openapi: 3.0.0
 
 info:
   description: KongAir Bookings service provides customers the ability to book and retrieve flight bookings on KongAir
-  version: 0.4.0-beta.1
+  version: 0.4.0-beta.2
   title: Bookings Service
 
 servers:
 - url: https://api.kong-air.com
   description: KongAir API Server
+
+security:
+  - bearerAuth: []
 
 tags:
 - name: sales
@@ -115,6 +118,11 @@ paths:
           description: Booking not found
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Booking:
       description: A flight Booking object

@@ -10,6 +10,12 @@ module.exports = function (bookingsStore) {
   const app = express();
   app.use(express.json());
 
+  // Operational health is intentionally available to the runtime platform,
+  // but it is not part of the client-facing OpenAPI contract or Gateway routes.
+  app.get('/health', (_, res) => {
+    res.status(200).json({ status: 'OK' });
+  });
+
   // Load the OpenAPI spec file
   const openApiSpecPath = path.join(__dirname, 'openapi.yaml');
   const openApiDocument = YAML.load(openApiSpecPath);
@@ -20,13 +26,11 @@ module.exports = function (bookingsStore) {
       apiSpec: openApiDocument,
       validateRequests: true,
       validateResponses: true,
+      // Kong Gateway validates the bearer token and supplies the trusted
+      // X-Consumer-Username identity used below.
+      validateSecurity: false,
     }),
   );
-
-  // Health check endpoint
-  app.get('/health', (_, res) => {
-    res.status(200).json({ status: 'OK' });
-  });
 
   app.use((req, res, next) => {
 

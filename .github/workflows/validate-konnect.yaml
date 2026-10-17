@@ -4,10 +4,14 @@ on:
   pull_request:
     paths:
       - .github/workflows/**
+      - app.js
+      - app.test.js
       - gateway/**
       - konnect/**
       - openapi.yaml
       - openapi/**
+      - package.json
+      - package-lock.json
       - scripts/**
 
 permissions:
@@ -21,6 +25,10 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
+      - name: Test service identity handling
+        run: |
+          npm ci
+          npm test -- --runInBand
       - name: Install decK
         uses: Kong/setup-deck@6ea0a466ee5826ddb531cbe851ba8e5a77a0e041 # v1
         with:
