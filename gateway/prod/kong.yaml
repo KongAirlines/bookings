@@ -39,6 +39,20 @@ services:
     - team-customer-data
     - owner-bookings
     - scope-bookings-prod
+  - id: 8f734c52-564e-52a3-bd95-31301ba0a035
+    methods:
+    - GET
+    name: bookings-prod_get-booking-by-ticket-number
+    paths:
+    - ~/bookings/(?<ticketnumber>[^#?/]+)$
+    plugins: []
+    regex_priority: 100
+    strip_path: false
+    tags:
+    - env-prod
+    - team-customer-data
+    - owner-bookings
+    - scope-bookings-prod
   tags:
   - env-prod
   - team-customer-data
