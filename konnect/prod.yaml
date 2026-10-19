@@ -28,8 +28,6 @@ apis:
       - ref: bookings-prod-publication
         portal_id: !lookup {name: KongAirlines Production}
         visibility: public
-        auth_strategy_ids:
-          - !lookup {name: kongairlines-key-auth-prod}
     implementations:
       - ref: bookings-prod-control-plane
         type: control_plane
