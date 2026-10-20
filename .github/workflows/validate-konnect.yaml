@@ -6,6 +6,8 @@ on:
       - .github/workflows/**
       - app.js
       - app.test.js
+      - demoAccount.js
+      - bookingsStore.js
       - gateway/**
       - konnect/**
       - openapi.yaml
@@ -36,6 +38,8 @@ jobs:
           wrapper: false
       - name: Generate ephemeral Gateway state
         run: ./scripts/generate-gateway.sh
+      - name: Test the generated post-ACE access guard in Gateway 3.16
+        run: node scripts/test-application-guard.js
       - name: Enforce Reference Platform ownership rules
         env:
           RELEASE_BASE_SHA: ${{ github.event.pull_request.base.sha }}

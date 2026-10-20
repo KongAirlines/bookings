@@ -9,17 +9,24 @@ services:
   path: /
   plugins:
   - config:
-      claims_to_verify:
-      - exp
-      cookie_names: []
-      header_names:
-      - authorization
-      key_claim_name: iss
-      run_on_preflight: false
-      secret_is_base64: false
-      uri_param_names: []
-    enabled: true
-    name: jwt
+      access:
+      - |
+        -- ACE (priority 955) authenticates and authorizes the Portal application.
+        -- This post-function runs afterwards; never trust client identity headers.
+        kong.service.request.clear_header("X-KongAir-Account-ID")
+        kong.service.request.clear_header("X-Consumer-Username")
+        local consumer = kong.client.get_consumer()
+        -- ACE's request context is populated from validated credentials,
+        -- independently of optional Kong Identity Consumer mapping (Gateway 3.16).
+        local ace = kong.ctx.shared.ace
+        local application_id = ace and ace.application_id
+        if (consumer and consumer.username == "kongairlines-anonymous")
+            or not application_id then
+          return kong.response.exit(401, { message = "An approved Portal application API key is required" })
+        end
+        kong.service.request.set_header("X-KongAir-Account-ID", application_id)
+        kong.service.request.clear_header("X-API-Key")
+    name: post-function
     tags:
     - env-prod
     - team-customer-data
