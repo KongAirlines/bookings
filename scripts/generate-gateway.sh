@@ -58,7 +58,7 @@ for stage in dev prod; do
     --analytics=false \
     --state "${tmp_dir}/routed.yaml" \
     --output-file "${tmp_dir}/authenticated.yaml" \
-    gateway/jwt-plugin.yaml
+    gateway/application-auth.yaml
   deck file add-tags \
     --analytics=false \
     --state "${tmp_dir}/authenticated.yaml" \

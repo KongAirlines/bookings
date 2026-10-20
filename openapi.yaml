@@ -4,7 +4,7 @@ openapi: 3.0.0
 
 info:
   description: KongAir Bookings service provides customers the ability to book and retrieve flight bookings on KongAir
-  version: 0.4.0-beta.2
+  version: 0.5.0-beta.1
   title: Bookings Service
 
 servers:
@@ -12,7 +12,7 @@ servers:
   description: KongAir API Server
 
 security:
-  - bearerAuth: []
+  - applicationKey: []
 
 tags:
 - name: sales
@@ -96,7 +96,7 @@ paths:
       tags:
       - sales
       summary: Get a booking by ticket number
-      description: Returns one booking owned by the authenticated customer
+      description: Returns one booking owned by the application's demo account
       operationId: get-booking-by-ticket-number
       parameters:
       - name: ticketNumber
@@ -119,10 +119,11 @@ paths:
 
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    applicationKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key from an approved Dev Portal application registration
   schemas:
     Booking:
       description: A flight Booking object

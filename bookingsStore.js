@@ -1,40 +1,38 @@
-// bookingsStore.js
-const fs = require('fs');
+const fs = require('node:fs');
+const crypto = require('node:crypto');
 
+// File persistence is suitable for this single-process demo, not a production database.
 class BookingsStore {
   constructor(filePath) {
     this.filePath = filePath;
     this.bookings = {};
+    if (fs.existsSync(filePath)) this.bookings = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  }
 
-    if (fs.existsSync(this.filePath)) {
-      try {
-        const data = fs.readFileSync(this.filePath, 'utf8');
-        this.bookings = JSON.parse(data);
-      } catch (err) {
-        console.error(`Error reading file from disk: ${err}`);
-      }
+  getAccountBookings(accountId) {
+    if (!Object.hasOwn(this.bookings, accountId)) {
+      const ticket = crypto.createHash('sha256').update(accountId).digest('hex').slice(0, 12).toUpperCase();
+      this.bookings[accountId] = [{
+        ticket_number: ticket,
+        seat: '18A',
+        flight: {
+          number: 'KA0288',
+          route_id: 'LHR-BOM',
+          scheduled_departure: '2027-02-13T09:30:00Z',
+          scheduled_arrival: '2027-02-13T18:40:00Z',
+        },
+      }];
     }
+    return this.bookings[accountId];
   }
 
-  getUserBookings(username) {
-    return this.bookings[username] || [];
+  getAccountBooking(accountId, ticketNumber) {
+    return this.getAccountBookings(accountId).find(booking => booking.ticket_number === ticketNumber);
   }
 
-  getUserBooking(username, ticketNumber) {
-    return this.getUserBookings(username)
-      .find((booking) => booking.ticket_number === ticketNumber);
-  }
-
-  addBooking(username, booking) {
-    if (!this.bookings[username]) this.bookings[username] = [];
-    this.bookings[username].push(booking);
-    this._writeBookingsToFile();
-  }
-
-  _writeBookingsToFile() {
-    fs.writeFile(this.filePath, JSON.stringify(this.bookings), (err) => {
-      if (err) console.error(err);
-    });
+  addBooking(accountId, booking) {
+    this.getAccountBookings(accountId).push(booking);
+    fs.writeFileSync(this.filePath, JSON.stringify(this.bookings));
   }
 }
 

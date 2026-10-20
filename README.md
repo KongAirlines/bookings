@@ -4,11 +4,16 @@ Provides the KongAir customer bookings service.
 
 The API specification can be found in the [openapi.yaml](openapi.yaml) file.
 
-Gateway clients authenticate with a signed JWT bearer token. Kong Gateway
-validates the token, maps its issuer to a Consumer, and replaces
-`X-Consumer-Username` with that Consumer's username before proxying the
-request. The service trusts that Gateway-supplied identity to segment booking
-data; it does not parse JWTs itself.
+Gateway clients supply a Dev Portal application API key in `X-API-Key`.
+ACE authorizes the application registration. A service-scoped post-function
+then overwrites `X-KongAir-Account-ID` with the authenticated application's
+principal ID and strips the API key before proxying. This stable account ID
+survives API-key rotation.
+
+Each application receives its own fictional customer and bookings sandbox.
+The application identity does not represent a logged-in passenger. Services
+must be reachable only through the trusted Gateway boundary; the internal
+account header is not a credential for directly exposed services.
 
 **This is an example service only. Proper security measures should be followed in production use cases.**
 
@@ -59,12 +64,12 @@ npm run dev
 
 Direct local requests bypass Kong Gateway, so supply a test identity header:
 ```
-curl -s -H "x-consumer-username: jhamby" localhost:3000/bookings
+curl -s -H "X-KongAir-Account-ID: 11111111-1111-4111-8111-111111111111" localhost:3000/bookings
 ```
 
 Create a new booking for the same local test identity:
 ```
-curl -X POST -H "x-consumer-username: jhamby" 'http://localhost:3000/bookings' \
+curl -X POST -H "X-KongAir-Account-ID: 11111111-1111-4111-8111-111111111111" 'http://localhost:3000/bookings' \
 -H 'Content-Type: application/json' \
 -d '{
     "flight_number": "KA0277",
@@ -88,11 +93,12 @@ desired state. It is the protected-API example for the
 - [`konnect/prod.yaml`](konnect/prod.yaml) owns the public production Catalog
   API. Production Gateway state is promoted to the
   [platform repository](https://github.com/KongAirlines/platform) for review.
-- The Platform repository owns shared Gateway Consumers, JWT verification
-  credentials, and the global Access Control Enforcement plugin. This
-  repository owns the service-scoped JWT policy. ACE limits traffic to
-  published Catalog operations; it does not replace JWT authentication or
-  require a Dev Portal application credential for this API.
+- The Platform repository owns the Key Auth application strategies, global ACE,
+  and its anonymous Consumer. This repository selects the stage's strategy and
+  rejects anonymous requests at the protected Gateway Service.
+- Register a Portal application, request API access, obtain approval, and
+  generate an API key. The Gateway account ID is the application's principal
+  ID; no manually maintained application-to-passenger mapping is needed.
 - The root [`openapi.yaml`](openapi.yaml) is the next beta contract, while
   [`openapi/versions/`](openapi/versions/) retains immutable stable releases.
 

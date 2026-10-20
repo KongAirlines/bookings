@@ -39,12 +39,12 @@ if grep -Fq 'name: ace' gateway/dev/kong.yaml gateway/prod/kong.yaml; then
 fi
 
 for stage in dev prod; do
-  if ! grep -Fq 'name: jwt' "gateway/${stage}/kong.yaml"; then
-    echo "protected service Gateway state must enable JWT authentication" >&2
+  if ! grep -Fq 'name: post-function' "gateway/${stage}/kong.yaml"; then
+    echo "protected service Gateway state must enforce approved Portal application identity" >&2
     exit 1
   fi
-  if ! grep -Fq 'auth_strategy_ids: []' "konnect/${stage}.yaml"; then
-    echo "protected service publications must explicitly clear application auth strategies" >&2
+  if ! grep -Fq "name: kongairlines-key-auth-${stage}" "konnect/${stage}.yaml"; then
+    echo "protected service publications must select the Portal Key Auth strategy" >&2
     exit 1
   fi
 done

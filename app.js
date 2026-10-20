@@ -7,6 +7,7 @@ module.exports = function (bookingsStore) {
 
   require('dotenv').config()
 
+  const demoAccount = require('./demoAccount');
   const app = express();
   app.use(express.json());
 
@@ -26,8 +27,7 @@ module.exports = function (bookingsStore) {
       apiSpec: openApiDocument,
       validateRequests: true,
       validateResponses: true,
-      // Kong Gateway validates the bearer token and supplies the trusted
-      // X-Consumer-Username identity used below.
+      // ACE authorizes the Portal application; Gateway overwrites the account header.
       validateSecurity: false,
     }),
   );
@@ -38,28 +38,16 @@ module.exports = function (bookingsStore) {
       return next();
     }
 
-    // Extract username from X-Consumer-Username header
-    const usernameHeader = req.headers['x-consumer-username'];
-
-    if (usernameHeader) {
-      // If a valid username is found, set it in the req object and continue
-      if (typeof usernameHeader === 'string') {
-        req.user = usernameHeader;
-        next();
-      } else {
-        // If there is no valid username, reject the request
-        res.status(401).end();
-      }
-    } else {
-      // If there is no username, reject the request
-      res.status(401).end();
-    }
+    const account = demoAccount(req.headers['x-kongair-account-id']);
+    if (!account) return res.status(401).end();
+    req.account = account;
+    next();
   });
 
   // Routes
   // ********* GET /bookings *********
   app.get('/bookings', (req, res) => {
-    const userBookings = bookingsStore.getUserBookings(req.user);
+    const userBookings = bookingsStore.getAccountBookings(req.account.id);
     if (!userBookings)
       return res.json([]); // Return empty array if no bookings for this user
     res.json(userBookings);
@@ -67,8 +55,8 @@ module.exports = function (bookingsStore) {
 
   // ********* GET /bookings/:ticketNumber *********
   app.get('/bookings/:ticketNumber', (req, res) => {
-    const booking = bookingsStore.getUserBooking(
-      req.user,
+    const booking = bookingsStore.getAccountBooking(
+      req.account.id,
       req.params.ticketNumber,
     );
 
@@ -82,7 +70,6 @@ module.exports = function (bookingsStore) {
   // ********* POST /bookings *********
   app.post('/bookings', async (req, res, next) => {
     try {
-      console.log(`${process.env.FLIGHT_SVC_ENDPOINT}${req.body.flight_number}`);
       const flightResponse = await axios.get(
         `${process.env.FLIGHT_SVC_ENDPOINT}${req.body.flight_number}`);
 
@@ -96,7 +83,7 @@ module.exports = function (bookingsStore) {
         flight: flightResponse.data,
       };
 
-      bookingsStore.addBooking(req.user, newBooking);
+      bookingsStore.addBooking(req.account.id, newBooking);
 
       res.status(201).json({ ticket_number: newBooking.ticket_number });
 
