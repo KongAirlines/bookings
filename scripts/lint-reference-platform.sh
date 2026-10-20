@@ -43,6 +43,10 @@ for stage in dev prod; do
     echo "protected service Gateway state must enable JWT authentication" >&2
     exit 1
   fi
+  if ! grep -Fq 'auth_strategy_ids: []' "konnect/${stage}.yaml"; then
+    echo "protected service publications must explicitly clear application auth strategies" >&2
+    exit 1
+  fi
 done
 
 if grep -ERin "${OBSOLETE_PATTERN}" README.md .github gateway konnect scripts; then

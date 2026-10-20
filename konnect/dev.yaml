@@ -23,6 +23,7 @@ apis:
       - ref: bookings-dev-publication
         portal_id: !lookup {name: KongAirlines Development}
         visibility: private
+        auth_strategy_ids: []
     implementations:
       - ref: bookings-dev-control-plane
         type: control_plane
