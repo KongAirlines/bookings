@@ -13,6 +13,8 @@ apis:
   - ref: bookings-prod-api
     name: KongAir Bookings
     description: Production Catalog API owned by the Bookings service team.
+    # Authorize ACE-mapped operation removal during API updates (kongctl >= 1.21).
+    force_delete: true
     version: 0.4.0
     versions:
       - ref: bookings-prod-0-1-0
