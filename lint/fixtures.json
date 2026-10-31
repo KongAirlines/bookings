@@ -1,0 +1,213 @@
+[
+{
+  "tool": "deck",
+  "rules": "lint/gateway-dev.yaml",
+  "document": {
+    "_format_version": "3.0",
+    "_info": {
+      "select_tags": [
+        "scope-bookings-dev"
+      ]
+    },
+    "services": [
+      {
+        "name": "example",
+        "tags": [
+          "env-dev",
+          "team-customer-data",
+          "owner-bookings",
+          "scope-bookings-dev"
+        ],
+        "routes": [
+          {
+            "name": "example",
+            "tags": [
+              "env-dev",
+              "team-customer-data",
+              "owner-bookings",
+              "scope-bookings-dev"
+            ]
+          }
+        ],
+        "plugins": [
+          {
+            "name": "post-function",
+            "tags": [
+              "env-dev",
+              "team-customer-data",
+              "owner-bookings",
+              "scope-bookings-dev"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {"name": "quoted root plugins", "rule": "service-no-global-plugins", "changes": [{"path": ["plugins"], "value": [{"name": "rate-limiting"}]}]},
+    {"name": "nested ACE", "rule": "service-no-platform-auth", "changes": [{"path": ["services", 0, "plugins", 0, "name"], "value": "ace"}]},
+    {"name": "nested JWT", "rule": "service-no-platform-auth", "changes": [{"path": ["services", 0, "plugins", 0, "name"], "value": "jwt"}]},
+    {"name": "missing selector", "rule": "gateway-selector", "changes": [{"path": ["_info"], "delete": true}]},
+    {"name": "extra selector", "rule": "gateway-selector", "changes": [{"path": ["_info", "select_tags"], "value": ["scope-bookings-dev", "unexpected"]}]},
+    {"name": "missing whole route tags", "rule": "gateway-entity-tags", "changes": [{"path": ["services", 0, "routes", 0, "tags"], "delete": true}]},
+    {"name": "missing tag env-dev", "rule": "gateway-entity-tags", "changes": [{"path": ["services", 0, "routes", 0, "tags"], "value": ["team-customer-data", "owner-bookings", "scope-bookings-dev"]}]},
+    {"name": "missing tag team-customer-data", "rule": "gateway-entity-tags", "changes": [{"path": ["services", 0, "routes", 0, "tags"], "value": ["env-dev", "owner-bookings", "scope-bookings-dev"]}]},
+    {"name": "missing tag owner-bookings", "rule": "gateway-entity-tags", "changes": [{"path": ["services", 0, "routes", 0, "tags"], "value": ["env-dev", "team-customer-data", "scope-bookings-dev"]}]},
+    {"name": "missing tag scope-bookings-dev", "rule": "gateway-entity-tags", "changes": [{"path": ["services", 0, "routes", 0, "tags"], "value": ["env-dev", "team-customer-data", "owner-bookings"]}]},
+    {"name": "missing identity guard", "rule": "service-identity-guard", "changes": [{"path": ["services", 0, "plugins"], "value": []}]}
+  ]
+},
+{
+  "tool": "kongctl",
+  "rules": "lint/konnect-dev.yaml",
+  "document": {
+    "control_planes": [
+      {
+        "_external": {
+          "selector": {}
+        }
+      }
+    ],
+    "apis": [
+      {
+        "force_delete": true,
+        "publications": [
+          {
+            "auth_strategy_ids": [
+              {
+                "name": "kongairlines-key-auth-dev"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {"name": "false force_delete", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "force_delete"], "value": false}]},
+    {"name": "missing force_delete", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "force_delete"], "delete": true}]},
+    {"name": "string force_delete", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "force_delete"], "value": "true"}]},
+    {"name": "second API invalid", "rule": "service-catalog-policy", "changes": [{"path": ["apis"], "value": [{"force_delete": true, "publications": [{"auth_strategy_ids": [{"name": "kongairlines-key-auth-dev"}]}]}, {"force_delete": false, "publications": [{"auth_strategy_ids": [{"name": "kongairlines-key-auth-dev"}]}]}]}]},
+    {"name": "missing publications", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "publications"], "delete": true}]},
+    {"name": "managed control plane", "rule": "service-catalog-policy", "changes": [{"path": ["control_planes", 0, "_external"], "delete": true}]},
+    {"name": "missing publication strategy", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "publications", 0, "auth_strategy_ids"], "delete": true}]},
+    {"name": "wrong strategy", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "publications", 0, "auth_strategy_ids", 0, "name"], "value": "wrong"}]},
+    {"name": "sync must not prune development versions", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "versions"], "value": []}]}
+  ]
+},
+{
+  "tool": "deck",
+  "rules": "lint/gateway-prod.yaml",
+  "document": {
+    "_format_version": "3.0",
+    "_info": {
+      "select_tags": [
+        "env-prod"
+      ]
+    },
+    "services": [
+      {
+        "name": "example",
+        "tags": [
+          "env-prod",
+          "team-customer-data",
+          "owner-bookings",
+          "scope-bookings-prod"
+        ],
+        "routes": [
+          {
+            "name": "example",
+            "tags": [
+              "env-prod",
+              "team-customer-data",
+              "owner-bookings",
+              "scope-bookings-prod"
+            ]
+          }
+        ],
+        "plugins": [
+          {
+            "name": "post-function",
+            "tags": [
+              "env-prod",
+              "team-customer-data",
+              "owner-bookings",
+              "scope-bookings-prod"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {"name": "quoted root plugins", "rule": "service-no-global-plugins", "changes": [{"path": ["plugins"], "value": [{"name": "rate-limiting"}]}]},
+    {"name": "nested ACE", "rule": "service-no-platform-auth", "changes": [{"path": ["services", 0, "plugins", 0, "name"], "value": "ace"}]},
+    {"name": "nested JWT", "rule": "service-no-platform-auth", "changes": [{"path": ["services", 0, "plugins", 0, "name"], "value": "jwt"}]},
+    {"name": "missing selector", "rule": "gateway-selector", "changes": [{"path": ["_info"], "delete": true}]},
+    {"name": "extra selector", "rule": "gateway-selector", "changes": [{"path": ["_info", "select_tags"], "value": ["env-prod", "unexpected"]}]},
+    {"name": "missing whole route tags", "rule": "gateway-entity-tags", "changes": [{"path": ["services", 0, "routes", 0, "tags"], "delete": true}]},
+    {"name": "missing tag env-prod", "rule": "gateway-entity-tags", "changes": [{"path": ["services", 0, "routes", 0, "tags"], "value": ["team-customer-data", "owner-bookings", "scope-bookings-prod"]}]},
+    {"name": "missing tag team-customer-data", "rule": "gateway-entity-tags", "changes": [{"path": ["services", 0, "routes", 0, "tags"], "value": ["env-prod", "owner-bookings", "scope-bookings-prod"]}]},
+    {"name": "missing tag owner-bookings", "rule": "gateway-entity-tags", "changes": [{"path": ["services", 0, "routes", 0, "tags"], "value": ["env-prod", "team-customer-data", "scope-bookings-prod"]}]},
+    {"name": "missing tag scope-bookings-prod", "rule": "gateway-entity-tags", "changes": [{"path": ["services", 0, "routes", 0, "tags"], "value": ["env-prod", "team-customer-data", "owner-bookings"]}]},
+    {"name": "missing identity guard", "rule": "service-identity-guard", "changes": [{"path": ["services", 0, "plugins"], "value": []}]}
+  ]
+},
+{
+  "tool": "kongctl",
+  "rules": "lint/konnect-prod.yaml",
+  "document": {
+    "control_planes": [
+      {
+        "_external": {
+          "selector": {}
+        }
+      }
+    ],
+    "apis": [
+      {
+        "force_delete": true,
+        "publications": [
+          {
+            "auth_strategy_ids": [
+              {
+                "name": "kongairlines-key-auth-prod"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {"name": "false force_delete", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "force_delete"], "value": false}]},
+    {"name": "missing force_delete", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "force_delete"], "delete": true}]},
+    {"name": "string force_delete", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "force_delete"], "value": "true"}]},
+    {"name": "second API invalid", "rule": "service-catalog-policy", "changes": [{"path": ["apis"], "value": [{"force_delete": true, "publications": [{"auth_strategy_ids": [{"name": "kongairlines-key-auth-prod"}]}]}, {"force_delete": false, "publications": [{"auth_strategy_ids": [{"name": "kongairlines-key-auth-prod"}]}]}]}]},
+    {"name": "missing publications", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "publications"], "delete": true}]},
+    {"name": "managed control plane", "rule": "service-catalog-policy", "changes": [{"path": ["control_planes", 0, "_external"], "delete": true}]},
+    {"name": "missing publication strategy", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "publications", 0, "auth_strategy_ids"], "delete": true}]},
+    {"name": "wrong strategy", "rule": "service-catalog-policy", "changes": [{"path": ["apis", 0, "publications", 0, "auth_strategy_ids", 0, "name"], "value": "wrong"}]},
+    {"name": "production cannot write Gateway", "rule": "service-catalog-policy", "changes": [{"path": ["control_planes", 0, "_deck"], "value": {"files": ["unexpected"]}}]}
+  ]
+},
+{
+  "tool": "kongctl",
+  "rules": "lint/openapi.yaml",
+  "document": {
+    "info": {
+      "version": "0.5.0-beta.1"
+    },
+    "paths": {
+      "/flights": {}
+    }
+  },
+  "cases": [
+    {"name": "stable development version", "rule": "current-contract", "changes": [{"path": ["info", "version"], "value": "0.5.0"}]},
+    {"name": "missing version", "rule": "current-contract", "changes": [{"path": ["info", "version"], "delete": true}]},
+    {"name": "internal /health", "rule": "current-contract", "changes": [{"path": ["paths", "/health"], "value": {}}]},
+    {"name": "internal /internal/ready", "rule": "current-contract", "changes": [{"path": ["paths", "/internal/ready"], "value": {}}]},
+    {"name": "internal /live/", "rule": "current-contract", "changes": [{"path": ["paths", "/live/"], "value": {}}]}
+  ]
+}
+]
